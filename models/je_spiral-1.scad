@@ -22,7 +22,7 @@ THICK=3;
 LENGTH=50;
 WIDTH=30;
 
-module cross_members(width, D=4) {
+module cross_members(width, D=5) {
     translate([width/2, 0]) {
         scale([1.8, 1, 1]) {
             translate([0, width*.5])
@@ -35,10 +35,10 @@ module cross_members(width, D=4) {
 }
 module neg_cross_members(width) {
     translate([width/2, width*.5, THICK])
-        cylinder(d=3, h=THICK*4, center=true);
+        cylinder(d=3.1, h=THICK*4, center=true);
     
     translate([width/2, -width*.5, THICK])
-        cylinder(d=3, h=THICK*4, center=true);
+        cylinder(d=3.1, h=THICK*4, center=true);
 }
 
 module _segment(length, width) {
@@ -90,19 +90,15 @@ module segments(length, width) {
     //    segment(length, width);
 }
 
-//segments(LENGTH, WIDTH);
-//translate([LENGTH, 0])
-//    rotate([0,0,50])
-
 
  segments(LENGTH-5, WIDTH-(5*.8));
-    translate([LENGTH-5, 0, -.1]) {
+    translate([LENGTH-5, 0, -.25]) {
         segments(LENGTH-10, WIDTH-(10*.8));
         
-        translate([LENGTH-10, 0, -.1]) {
+        translate([LENGTH-10, 0, -.25]) {
             segments(LENGTH-15, WIDTH-(15*.8));
             
-            translate([LENGTH-15, 0, -.1])
+            translate([LENGTH-15, 0, -.25])
                 segments(LENGTH-20, WIDTH-(20*.8));
         }
     }
@@ -120,4 +116,3 @@ for(i = [0: 5: 15]) {
 */
 
 
-//segments(LENGTH, WIDTH);
