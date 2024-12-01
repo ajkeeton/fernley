@@ -18,203 +18,106 @@ polygon(polyRound([
 */
 
 $fn=40;
-HINGE_OFF=40;
 THICK=3;
+LENGTH=50;
+WIDTH=30;
 
-module a_hinge(DO=25, DI=15) {
-    difference() {
-        cylinder(center=true, d=DO, h=THICK*2);
-        translate([-10, -10])
-            cube([20,20,10], center=true);
-        cylinder(center=true, d=DI, h=10);
-    }
-}
-
-module a() {
-    union() {
-        difference() {
-            /*union() {
-                hull() {
-                    cylinder(center=true, d=30);
-                    translate([30, 0, 0])
-                        cylinder(center=true, d=10);
-                }
-            }*/
+module cross_members(width, D=4) {
+    translate([width/2, 0]) {
+        scale([1.8, 1, 1]) {
+            translate([0, width*.5])
+                 cylinder(d=D, h=THICK);
             
-            translate([10, 40, 0])
-                cylinder(center=true, d=150, h=THICK*2);
-            translate([0, 72, 0])
-                scale([1.5, 1])
-                   cylinder(center=true, d=145, h=THICK*2);
-        
-            translate([-200,-50])
-                cube([200,200,THICK*2], center=true);
-     
-            translate([68, 6])
-                a_hinge();
-            
-            translate([91,0])
-                rotate([0,0,45])
-                    cube([200,200,5], center=true);
-         }
-
-        translate([0, -17])
-            cylinder(center=true, d=34, h=THICK*2);
-     }
-
-}
-
-
-module _b() {
-    //translate([0, -30]) {
-        polygon(
-            polyRound([
-                [-10, -15, 10],
-                [-10, 10, 20],
-        
-                [15, 0, 30],
-
-                [30, 5, 20],
-                [33, -5, 1],
-                /*
-                [40, 10, 10],
-                [40, 0, 10],
-                [35, 0, 10],
-                */
-        
-                [15, -20, 20],
-            ]));
-        translate([35, -3])
-            cylinder(center=true, d=10);
-    //}   
-}
-
-module _b_neg() {
-    rotate([0, 0, 35])
-        translate([-35, 3])
-           _b();
-    rotate([0, 0, -10])
-        translate([-35, 3])
-           _b();
-}
-
-module b() {
-    difference() {
-        _b();
-        translate([0, -8])
-            _b_neg();
-    }
-}
-
-//b();
-//translate([39, 3.5]) {
-//    rotate([0, 0, -40])
-//        b();
-//}
-
-
-module _c(D1, D2, DN1, DN2) {
-    difference() {
-        union() {
-            hull() {
-                cylinder(center=true, d=D1, h=THICK);
-                translate([35, 0])
-                    cylinder(center=true, d=D2*.95, h=THICK);
-            }
-            translate([40, 0, 0])
-                cylinder(center=true, d=DN2, h=THICK);
-        }
-        translate([HINGE_OFF, 0]) {
-            a_hinge(DN1, DN2);  
+            translate([0, -width*.5])
+                 cylinder(d=D, h=THICK);
         }
     }
 }
-
-module c(start, inc, to) {
-    //D2 = .5 * D1;
+module neg_cross_members(width) {
+    translate([width/2, width*.5, THICK])
+        cylinder(d=3, h=THICK*4, center=true);
     
-    for(i = [start : inc : to]) {
-        yoff = (start - i) * 20-start;
-        D2 = i * .5;
-        D1N = i-1;
-        D2N = D1N * .5;
+    translate([width/2, -width*.5, THICK])
+        cylinder(d=3, h=THICK*4, center=true);
+}
+
+module _segment(length, width) {
+    hull() {
+        translate([length/2, 0, 0])
+            cylinder(d=width*.7, h=THICK*2);
+        translate([length, 0, 0])
+            cylinder(d=width*.5, h=THICK*2);
+    }
+
+    hull() {
+        cylinder(d=width*.7, h=THICK);
+        cross_members(width);
+        translate([length*.9, 0, 0])
+            cylinder(d=width*.5, h=THICK);
+    }
+    
+    translate([0, 0, THICK])
+        cross_members(width);
+}
+
+module neg_seg(length, width) {
+     translate([0, 0, THICK])
+        cylinder(d=width*.75, h=THICK+1);
+     translate([length, 0, -1])
+        scale([1, 2, 1])
+            cylinder(d=width+.5, h=THICK+1.01);
+    
+     cylinder(d=5, h=THICK*5, center=true);
+     translate([length, 0, 0])
+        cylinder(d=5, h=THICK*5, center=true);
+}
+
+module segment(length, width) {
+    difference() {
+        _segment(length, width);
+        neg_seg(length, width);
+        neg_cross_members(width);
         
-        echo(i, D2, D1N, D2N, yoff);
+        //translate([length/3, 0, THICK])
+        //    scale([1, 1, 1])
+        //       # cylinder(d=14, h=THICK*4, center=true);
+    }
+}
+module segments(length, width) {
+    segment(length, width);
+    //rotate([180, 0]) translate([0,0,-4*THICK]) segment(length, width);
+    //translate([length+5, 0])
+    //    segment(length, width);
+}
+
+//segments(LENGTH, WIDTH);
+//translate([LENGTH, 0])
+//    rotate([0,0,50])
+
+
+ segments(LENGTH-5, WIDTH-(5*.8));
+    translate([LENGTH-5, 0, -.1]) {
+        segments(LENGTH-10, WIDTH-(10*.8));
         
-        translate([0, yoff]) {
-            difference() {
-                _c(i, D2, D1N, D2N);
-                
-                translate([HINGE_OFF, 0])
-                    cylinder(center=true, d=3, h=THICK*2);
-                
-                translate([8, -i/2*.75])
-                    cylinder(center=true, d=3, h=THICK*2);
-                                
-                translate([HINGE_OFF*.75, -i*.2])
-                    cylinder(center=true, d=3, h=THICK*2);
-                
-                translate([HINGE_OFF*.5, i*.28])
-                    cylinder(center=true, d=3, h=THICK*2);
-                
-                for(j = [-10 : 20 : 40] )
-                    rotate([0, 0, j])
-                        translate([-40, 0])
-                            scale([1,1,1.5])
-                                _c(i, D2, D1N, D2N);
-                
-            }
+        translate([LENGTH-10, 0, -.1]) {
+            segments(LENGTH-15, WIDTH-(15*.8));
             
-            translate([0, 0, -THICK/2])
-                difference() {
-                    cylinder(center=true, d=i-10, h=THICK);
-                    cylinder(center=true, d=3, h=THICK*2);
-                    //translate([7, -i/2*.75])
-                    //    cylinder(center=true, d=3, h=THICK*2);
-                }
+            translate([LENGTH-15, 0, -.1])
+                segments(LENGTH-20, WIDTH-(20*.8));
         }
     }
-}
-
-c(20, -2, 14);
-translate([0, 50, 0]) 
-    mirror([0, 0, 1])
-        c(20, -2, 14);
-
 /*
-translate([0, -30]) {
-    difference() {
-        cylinder(d=30, h=2, center=true);
-        cylinder(d=3, h=20, center=true);
-    }
-}
-
-
-translate([50, 0, 0]) {
-    rotate([180, 0]) {
-        mirror([0, 0, 1])
-            linear_extrude(2) c(30, -2, 28);
-
-        translate([0, -30]) {
-            difference() {
-                cylinder(d=30, h=2, center=true);
-                cylinder(d=3, h=20, center=true);
-            }
-        }
+for(i = [0: 5: 15]) {
+    echo(i, (LENGTH-i+5)*i/5);
+    
+    translate([(LENGTH-i+5)*i/5, 0]) {
+        segments(LENGTH-i, WIDTH-(i*.9));
+        
+        //translate([0, WIDTH-i+8])
+        //    segments(LENGTH-i, WIDTH-i);
     }
 }
 */
 
 
-/*
-linear_extrude(2) c(30, -2, 30);
-
-translate([0, 35, 6]) {
-    difference() {
-        cylinder(d=30, h=2, center=true);
-        cylinder(d=3, h=20, center=true);
-    }
-}
-*/
-
-// rotate([0,0, 45]) translate([-35.5, -.5])  c();
+//segments(LENGTH, WIDTH);
