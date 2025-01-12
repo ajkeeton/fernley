@@ -1,0 +1,4 @@
+*.swp
+*.stl
+*.gcode
+.DS_Store

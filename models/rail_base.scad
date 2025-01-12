@@ -167,9 +167,9 @@ module rod() {
 
 module bearing_riser() {
     translate([100, 0, -18]) {
-        translate([10, 0, -4]) {
+        translate([10, 0, -7.25]) {
             difference() {
-                cube([13.2, 55, 5], center=true);
+                cube([13.2, 50, 11.5], center=true);
             
                 translate([0, 21, -20])
                    cylinder(d=5.5, h=40);
@@ -180,8 +180,8 @@ module bearing_riser() {
         translate([-10, 15, 9])
             rotate([0, 0, 180])
                 switch();
-        translate([-10, 8, -5])
-            cube([8, 25 , 7], center=true);
+        translate([-5, 8, -8])
+            cube([20, 25 , 10], center=true);
         translate([5, 0, -7.25])
             cube([42, 20 , 11.5], center=true);
     }
@@ -220,7 +220,7 @@ module nema_neg() {
                     nema_screw();
                 }
                 
-                cylinder(d=22.25, h=10);
+       #         cylinder(d=22.25, h=30);
             }
         }
     
@@ -232,10 +232,10 @@ module nema_neg() {
         cube([30, 28, 15], center=true);
     
      translate([0, 0,-STEP/2-10]) {        
-        translate([9, 8]) cylinder(d=3.5, h=20);
-        translate([9, -8]) cylinder(d=3.5, h=20);
-        translate([26, 19]) cylinder(d=3.5, h=20);
-        translate([26, -19]) cylinder(d=3.5, h=20);
+        translate([9, 8]) cylinder(d=4, h=20);
+        translate([9, -8]) cylinder(d=4, h=20);
+        translate([20, 19]) cylinder(d=3.5, h=20);
+        translate([20, -19]) cylinder(d=3.5, h=20);
     }
 }
 
@@ -272,14 +272,14 @@ module nema_flange_front() {
         difference() {
             cube([8, 50, 5], center=true);
             translate([0, 20]) 
-               # cylinder(d=4, h=10, center=true);
+                cylinder(d=4, h=10, center=true);
             translate([0, -20]) 
-               # cylinder(d=4, h=10, center=true);
+                cylinder(d=4, h=10, center=true);
         }
     }
 }
 
-module nema_mount() {
+module nema_mount_old() {
     mirror([180,0,0])
         bearing_riser();
 
@@ -297,8 +297,7 @@ module nema_mount() {
                 // the vertical part
                 translate([0, 0, 1]) 
                     cube([5, STEP-1, STEP-1], center=true);
-                
-
+             
                 nema_flange_front();                
                 nema_flange_rear();                
                 nema_bevel();
@@ -309,18 +308,50 @@ module nema_mount() {
     }
 }
 
+module nema_mount() {
+    difference() {
+        mirror([180,0,0])
+            bearing_riser();
+        translate([-120-25 + 40, 0, -5-15])
+            cube([43,12.1,10], center=true);
+    }
+    
+    translate([-120-25, 0, -5]) {
+        difference() {
+            union() {
+                //translate([10, 0, -21])
+                //    cube([25, STEP/2+2, 10], center=true);
+            
+                translate([0, 0, -23.5])
+                    cube([60, STEP+3, 5], center=true);
+                
+                // the vertical part
+                translate([0, 0, 1]) 
+                    cube([7, STEP-1, STEP-1], center=true);
+                
+                //nema_flange_front();                
+                //nema_flange_rear();                
+                nema_bevel();
+            }
+                
+            nema_neg();
+
+        }
+    }
+}
+
 difference() {
     union() {
-        translate([0, 0, -4.7])
-            carriage();
+        //translate([0, 0, -4.7])
+        //    carriage();
         //bearing_riser();
         
-        //nema_mount();
+        nema_mount();
     }
     translate([0, 0, -4.7])
         nut();
     
-    #slide();
+    slide();
     rail();
     mirror([180,0,0])
         rail_holes();

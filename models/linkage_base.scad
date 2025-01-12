@@ -1,8 +1,7 @@
 
-
 SPINE=6.4;
 TUBE=6.18;
-$fn=40;
+$fn=100;
 
 module clamp() {
     cylinder(d=SPINE*2+1, h=20, center=true);
@@ -83,11 +82,11 @@ module linkage_conn() {
     
         translate([12, -2])
             rotate([90, 0])
-                cylinder(d=8.25, h=10); 
+                cylinder(d=8, h=10); 
         
         translate([-12, -2])
             rotate([90, 0])
-                cylinder(d=8.25, h=10); 
+                cylinder(d=8, h=10); 
     }
 }
 
@@ -155,7 +154,7 @@ module linkage2() {
     }
 }
 
-thing();
+/*
 translate([20, 0, -25])
     rotate([90, 0])
         linkage1();
@@ -163,5 +162,7 @@ translate([20, 0, -25])
 translate([20, 0, 25])
     rotate([90, 0])
         linkage2();
+*/
 
+thing();
 
