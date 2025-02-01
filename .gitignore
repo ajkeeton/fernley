@@ -1,4 +1,5 @@
 *.swp
 *.stl
 *.gcode
+*.zip
 .DS_Store
